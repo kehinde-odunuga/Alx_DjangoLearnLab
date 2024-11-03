@@ -3,6 +3,8 @@
 ## Command
 ```python
 
+from bookshelf.models import Book
+
 # Delete the book instance
 book.delete()
 
