@@ -1,11 +1,11 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-from django.views.generic import TemplateView, ListView, DetailView, UpdateView
+from django.views.generic import TemplateView, ListView, UpdateView
+from django.views.generic.detail import DetailView
 from .models import Library
 from .models import Book
 
 # Create your views here.
-
 
 def homepage(request):
     return HttpResponse('homepage')
