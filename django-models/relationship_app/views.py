@@ -1,4 +1,7 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.contrib.auth import login, logout, authenticate
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.views.generic import TemplateView, ListView, UpdateView
 from django.views.generic.detail import DetailView
@@ -38,8 +41,46 @@ class LibraryDetailView(DetailView):
     template_name = 'relationship_app/library_detail.html'
     context_object_name = 'library'
 
-    # def get_context_data(self, **kwargs):
-    #     """Injects additional context data specific to the library."""
-    #     context = super().get_context_data(**kwargs)  # Get default context data
-    #     library = self.get_object()  # Retrieve the current book instance
-    #     context['average_rating'] = library.get_average_rating()
+# def register(request):
+#     if request.method == 'POST':
+#         form = UserCreationForm(request.POST)
+#         if form.is_valid():
+#             user = form.save()
+#             login(request, user)
+#             return redirect('home')  # Replace 'home' with the desired redirect page after registration
+#     else:
+#         form = UserCreationForm()
+#     return render(request, 'relationship_app/register.html', {'form': form})
+
+# User Registration View
+def register(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            # After successful registration, log the user in
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password1')
+            user = authenticate(username=username, password=password)
+            login(request, user)
+            return redirect('homepage')  # Redirect to a home page or dashboard
+    else:
+        form = UserCreationForm()
+    return render(request, 'relationship_app/register.html', {'form': form})
+
+# User Login View
+def user_login(request):
+    if request.method == 'POST':
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            login(request, form.get_user())
+            return redirect('homepage')  # Redirect to a home page or dashboard
+    else:
+        form = AuthenticationForm()
+    return render(request, 'relationship_app/login.html', {'form': form})
+
+# User Logout View
+@login_required
+def user_logout(request):
+    logout(request)
+    return render(request, 'relationship_app/logout.html')
