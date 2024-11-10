@@ -125,3 +125,7 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CSRF_COOKIE_SECURE = False  # For local development
+
+
+LOGIN_REDIRECT_URL = 'homepage'  # Replace 'home' with your desired redirect page
+LOGOUT_REDIRECT_URL = 'login'

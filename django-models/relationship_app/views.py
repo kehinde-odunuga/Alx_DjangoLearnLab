@@ -58,11 +58,13 @@ def register(request):
         form = UserCreationForm(request.POST)
         if form.is_valid():
             form.save()
-            # After successful registration, log the user in
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password1')
-            user = authenticate(username=username, password=password)
+            user = form.save()
             login(request, user)
+            # After successful registration, log the user in
+            # username = form.cleaned_data.get('username')
+            # password = form.cleaned_data.get('password1')
+            # user = authenticate(username=username, password=password)
+            # login(request, user)
             return redirect('homepage')  # Redirect to a home page or dashboard
     else:
         form = UserCreationForm()
