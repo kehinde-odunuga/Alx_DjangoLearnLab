@@ -9,6 +9,7 @@ from django.views.generic.detail import DetailView
 from .models import Library, Book, UserProfile
 from .utils import is_admin, is_librarian, is_member
 from .forms import BookForm
+from django.http import Http404
 
 
 #Create your views here.
@@ -104,13 +105,13 @@ def user_login(request):
 
 # User roles
 def is_admin(user):
-    return user.userprofile.role == 'Admin'
+    return getattr(user, 'userprofile', None) and user.userprofile.role == 'Admin'
 
 def is_librarian(user):
-    return user.userprofile.role == 'Librarian'
+    return getattr(user, 'userprofile', None) and user.userprofile.role == 'Librarian'
 
 def is_member(user):
-    return user.userprofile.role == 'Member'
+    return getattr(user, 'userprofile', None) and user.userprofile.role == 'Member'
 
 # Views for each role
 @login_required
