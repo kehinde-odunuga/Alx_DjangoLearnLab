@@ -22,6 +22,13 @@ class Book(models.Model):
         # Automatically set author_name based on the associated author
         self.author_name = self.author.name
         super().save(*args, **kwargs)
+        
+    class Meta:
+        permissions = [
+            ("can_add_book", "Can add book"),
+            ("can_change_book", "Can change book"),
+            ("can_delete_book", "Can delete book"),
+        ]
 
     def __str__(self):
         return f"{self.title} by {self.author.name}"
