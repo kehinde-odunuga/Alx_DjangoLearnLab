@@ -5,11 +5,11 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import HttpResponse, HttpResponseForbidden
 from django.views.generic import TemplateView, ListView, UpdateView
 from django.views.generic.detail import DetailView
-from .models import Library
-from .models import Book
+from .models import Library, Book, UserProfile
 from .utils import is_admin, is_librarian, is_member
 
-# Create your views here.
+
+#Create your views here.
 
 def homepage(request):
     return HttpResponse('homepage')
@@ -41,35 +41,18 @@ class LibraryDetailView(DetailView):
     model = Library
     template_name = 'relationship_app/library_detail.html'
     context_object_name = 'library'
-
-# def register(request):
-#     if request.method == 'POST':
-#         form = UserCreationForm(request.POST)
-#         if form.is_valid():
-#             user = form.save()
-#             login(request, user)
-#             return redirect('home')  # Replace 'home' with the desired redirect page after registration
-#     else:
-#         form = UserCreationForm()
-#     return render(request, 'relationship_app/register.html', {'form': form})
-
+    
 # User Registration View
 def register(request):
+    form = UserCreationForm()
+    
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():
             form.save()
-            user = form.save()
-            login(request, user)
-            # After successful registration, log the user in
-            # username = form.cleaned_data.get('username')
-            # password = form.cleaned_data.get('password1')
-            # user = authenticate(username=username, password=password)
-            # login(request, user)
-            return redirect('homepage')  # Redirect to a home page or dashboard
-    else:
-        form = UserCreationForm()
-    return render(request, 'relationship_app/register.html', {'form': form})
+            
+    context = {'form': form}
+    return render(request, 'relationship_app/register.html', context)
 
 # User Login View
 def user_login(request):
@@ -82,33 +65,29 @@ def user_login(request):
         form = AuthenticationForm()
     return render(request, 'relationship_app/login.html', {'form': form})
 
-# User Logout View
+
+# Helper functions to check user roles
+def is_admin(user):
+    return user.userprofile.role == 'Admin'
+
+def is_librarian(user):
+    return user.userprofile.role == 'Librarian'
+
+def is_member(user):
+    return user.userprofile.role == 'Member'
+
+# Views for each role
 @login_required
-def user_logout(request):
-    logout(request)
-    return render(request, 'relationship_app/logout.html')
-
-
 @user_passes_test(is_admin)
 def admin_view(request):
-    context = {
-        'role': 'Admin',
-        'user': request.user
-    }
-    return render(request, 'roles/admin_dashboard.html', context)
+    return render(request, 'relationship_app/admin_view.html')
 
+@login_required
 @user_passes_test(is_librarian)
 def librarian_view(request):
-    context = {
-        'role': 'Librarian',
-        'user': request.user
-    }
-    return render(request, 'roles/librarian_dashboard.html', context)
+    return render(request, 'relationship_app/librarian_view.html')
 
+@login_required
 @user_passes_test(is_member)
 def member_view(request):
-    context = {
-        'role': 'Member',
-        'user': request.user
-    }
-    return render(request, 'roles/member_dashboard.html', context)
+    return render(request, 'relationship_app/member_view.html')

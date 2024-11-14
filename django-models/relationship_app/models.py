@@ -1,7 +1,11 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 # Create your models here.
+
+
 class Author(models.Model):
     name = models.CharField(max_length=100)
 
@@ -10,12 +14,17 @@ class Author(models.Model):
 
 
 class Book(models.Model):
-    title = models.CharField(max_length=100)
-    author = models.ForeignKey(
-        Author, on_delete=models.CASCADE, related_name='books')
+    title = models.CharField(max_length=50)
+    author = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='books')
+    author_name = models.CharField(max_length=100, default="Unknown Author", editable=False)  # New field to store author name in Book table
+
+    def save(self, *args, **kwargs):
+        # Automatically set author_name based on the associated author
+        self.author_name = self.author.name
+        super().save(*args, **kwargs)
 
     def __str__(self):
-        return self.title
+        return f"{self.title} by {self.author.name}"
 
 
 class Library(models.Model):
@@ -27,35 +36,26 @@ class Library(models.Model):
 
 
 class Librarian(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=50)
     library = models.OneToOneField(Library, on_delete=models.CASCADE)
 
     def __repr__(self):
         return self.name
-    
-
-# models.py
-from django.db import models
-from django.contrib.auth.models import User
-from django.db.models.signals import post_save
-from django.dispatch import receiver
 
 class UserProfile(models.Model):
     ROLE_CHOICES = [
-        ('ADMIN', 'Admin'),
-        ('LIBRARIAN', 'Librarian'),
-        ('MEMBER', 'Member'),
+        ('Admin', 'Admin'),
+        ('Librarian', 'Librarian'),
+        ('Member', 'Member'),
     ]
-    
+
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='MEMBER')
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    role = models.CharField(max_length=10, choices=ROLE_CHOICES)
 
     def __str__(self):
         return f"{self.user.username} - {self.role}"
 
-# Signal to create UserProfile automatically
+# Signal to create or update the UserProfile whenever a User is created
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
@@ -63,6 +63,4 @@ def create_user_profile(sender, instance, created, **kwargs):
 
 @receiver(post_save, sender=User)
 def save_user_profile(sender, instance, **kwargs):
-    if not hasattr(instance, 'userprofile'):
-        UserProfile.objects.create(user=instance)
     instance.userprofile.save()
