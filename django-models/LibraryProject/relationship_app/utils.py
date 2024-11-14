@@ -1,6 +1,10 @@
+from .models import UserProfile
+
+
 def is_admin(user):
-    # Return True if the user has admin privileges
-    return user.is_staff  # or add custom logic here
+    if not user.is_authenticated:
+        return False
+    return UserProfile.objects.filter(user=user, role='Admin').exists()
 
 
 def is_librarian(user):
