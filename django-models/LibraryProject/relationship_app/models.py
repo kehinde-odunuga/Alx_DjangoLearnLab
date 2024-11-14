@@ -23,15 +23,17 @@ class Book(models.Model):
         self.author_name = self.author.name
         super().save(*args, **kwargs)
         
-    class Meta:
+    
+
+    def __str__(self):
+        return f"{self.title} by {self.author.name}"
+    
+class Meta(Book):
         permissions = [
             ("can_add_book", "Can add book"),
             ("can_change_book", "Can change book"),
             ("can_delete_book", "Can delete book"),
         ]
-
-    def __str__(self):
-        return f"{self.title} by {self.author.name}"
 
 
 class Library(models.Model):
