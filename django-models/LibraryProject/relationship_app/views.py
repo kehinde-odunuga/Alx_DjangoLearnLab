@@ -33,6 +33,11 @@ def list_books(request):
     context = {'books': books}  # Create a context dictionary with book list
     return render(request, 'relationship_app/list_books.html', context)
 
+def book_list(request):
+    books = Book.objects.all()  # Query all books
+    return render(request, 'bookshelf/book_list.html', {'books': books})
+LibraryProject/bookshelf/views.py doesn't contain: ["book_list", "books"]
+
 # View for adding a book
 @permission_required('relationship_app.can_add_book', raise_exception=True)
 def add_book(request):
