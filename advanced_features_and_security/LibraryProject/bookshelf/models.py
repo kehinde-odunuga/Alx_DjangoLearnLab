@@ -71,3 +71,20 @@ def create_user_profile(sender, instance, created, **kwargs):
 @receiver(post_save, sender=User)
 def save_user_profile(sender, instance, **kwargs):
     instance.userprofile.save()
+
+class Post(models.Model):
+    title = models.CharField(max_length=200)
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        permissions = [
+            ("can_view", "Can view post"),
+            ("can_create", "Can create post"),
+            ("can_edit", "Can edit post"),
+            ("can_delete", "Can delete post"),
+        ]
+
+    def __str__(self):
+        return self.title
