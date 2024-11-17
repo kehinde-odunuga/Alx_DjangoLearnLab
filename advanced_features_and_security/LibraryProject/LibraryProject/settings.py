@@ -44,6 +44,9 @@ SECURE_HSTS_PRELOAD = True
 
 SECURE_SSL_REDIRECT = True
 
+# Header for detecting HTTPS behind a proxy
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
 ALLOWED_HOSTS = []
 
 
