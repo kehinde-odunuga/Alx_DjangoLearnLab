@@ -34,10 +34,15 @@ SECURE_CONTENT_TYPE_NOSNIFF = True
 CSRF_COOKIE_SECURE = True # Requires HTTPS to be enabled
 SESSION_COOKIE_SECURE = True
 
-# Additional settings for secure cookies
-SECURE_HSTS_SECONDS = 31536000  # Enforce HTTPS for a year
+# Redirect all non-HTTPS requests to HTTPS
+SECURE_SSL_REDIRECT = True
+
+# Enforce HSTS (HTTP Strict Transport Security)
+SECURE_HSTS_SECONDS = 31536000  # 1 year
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_PRELOAD = True
+
+SECURE_SSL_REDIRECT = True
 
 ALLOWED_HOSTS = []
 
