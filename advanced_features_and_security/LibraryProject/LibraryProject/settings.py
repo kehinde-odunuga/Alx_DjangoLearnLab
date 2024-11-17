@@ -23,7 +23,21 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-35)waa395mwi)%@u^g*d9-d)haw*)sopmm6+guze-i@oy559ob'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
+
+# Browser protections
+SECURE_BROWSER_XSS_FILTER = True
+X_FRAME_OPTIONS = 'DENY'  # Prevent Clickjacking
+SECURE_CONTENT_TYPE_NOSNIFF = True
+
+# Enforce HTTPS for cookies (only in production with HTTPS enabled)
+CSRF_COOKIE_SECURE = True # Requires HTTPS to be enabled
+SESSION_COOKIE_SECURE = True
+
+# Additional settings for secure cookies
+SECURE_HSTS_SECONDS = 31536000  # Enforce HTTPS for a year
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
 
 ALLOWED_HOSTS = []
 
@@ -38,8 +52,15 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'bookshelf',
-    'relationship_app'
+    'relationship_app',
+    'csp',
 ]
+
+# Content Security Policy (CSP) settings
+CSP_DEFAULT_SRC = ("'self'",)
+CSP_SCRIPT_SRC = ("'self'", 'https://trustedscripts.example.com')
+CSP_STYLE_SRC = ("'self'", 'https://trustedstyles.example.com')
+
 
 AUTH_USER_MODEL = 'bookshelf.CustomUser'
 
