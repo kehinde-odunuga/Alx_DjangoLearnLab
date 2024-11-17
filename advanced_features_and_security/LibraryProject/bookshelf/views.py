@@ -1,7 +1,17 @@
-from django.shortcuts import render
-from django.contrib.auth.decorators import permission_required
-from django.shortcuts import render, get_object_or_404
-from .models import Post
+from django.shortcuts import render, get_object_or_404, redirect
+from .models import Post, Book,  BookForm, SearchForm
+
+from django.contrib.auth import login, logout, authenticate
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth.decorators import login_required, user_passes_test, permission_required
+
+from django.http import HttpResponse, HttpResponseForbidden
+from django.views.generic import TemplateView, ListView, UpdateView
+from django.views.generic.detail import DetailView
+from .models import Library, Book, UserProfile
+from .utils import is_admin, is_librarian, is_member
+from .forms import BookForm
+from django.http import Http404
 
 # Create your views here.
 
@@ -31,19 +41,6 @@ def delete_post(request, post_id):
     if request.method == 'POST':
         post.delete()
     return render(request, 'delete_post.html')
-
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import login, logout, authenticate
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from django.contrib.auth.decorators import login_required, user_passes_test
-from django.contrib.auth.decorators import permission_required
-from django.http import HttpResponse, HttpResponseForbidden
-from django.views.generic import TemplateView, ListView, UpdateView
-from django.views.generic.detail import DetailView
-from .models import Library, Book, UserProfile
-from .utils import is_admin, is_librarian, is_member
-from .forms import BookForm
-from django.http import Http404
 
 
 #Create your views here.
@@ -167,3 +164,46 @@ def librarian_view(request):
 @user_passes_test(is_member)
 def member_view(request):
     return render(request, 'relationship_app/member_view.html')
+
+
+
+def book_create_view(request):
+    if request.method == 'POST':
+        form = BookForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('book_list')  # Replace with your actual view name
+    else:
+        form = BookForm()
+    return render(request, 'bookshelf/book_form.html', {'form': form})
+
+def search_books_view(request):
+    form = SearchForm(request.GET or None)
+    books = Book.objects.none()
+    if form.is_valid():
+        query = form.cleaned_data['query']
+        books = Book.objects.filter(title__icontains=query)
+    return render(request, 'bookshelf/search_results.html', {'form': form, 'books': books})
+
+
+from django.shortcuts import render, get_object_or_404, redirect
+from .models import Book
+from .forms import ExampleForm, SearchForm
+
+def book_create_view(request):
+    if request.method == 'POST':
+        form = ExampleForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('book_list')  # Replace with your actual view name
+    else:
+        form = ExampleForm()
+    return render(request, 'bookshelf/book_form.html', {'form': form})
+
+def search_books_view(request):
+    form = SearchForm(request.GET or None)
+    books = Book.objects.none()
+    if form.is_valid():
+        query = form.cleaned_data['query']
+        books = Book.objects.filter(title__icontains=query)
+    return render(request, 'bookshelf/search_results.html', {'form': form, 'books': books})
