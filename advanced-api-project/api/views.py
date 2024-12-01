@@ -1,9 +1,10 @@
-from rest_framework import generics, permissions
+from rest_framework import generics
 from rest_framework.exceptions import ValidationError
 from api.models import Book
 from api.serializers import BookSerializer
 from datetime import datetime
 from rest_framework.filters import SearchFilter
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 
 # ListView: Retrieve all books.
 class BookListView(generics.ListAPIView):
@@ -26,7 +27,7 @@ class BookCreateView(generics.CreateAPIView):
     """
     queryset = Book.objects.all()
     serializer_class = BookSerializer
-    permission_classes = [permissions.IsAuthenticated]  # Only authenticated users can create a book
+    permission_classes = [IsAuthenticated]  # Only authenticated users can create a book
 
     def perform_create(self, serializer):
         # Additional validation logic
@@ -43,7 +44,7 @@ class BookUpdateView(generics.UpdateAPIView):
     """
     queryset = Book.objects.all()
     serializer_class = BookSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]  # Authenticated users can update; others can only read
+    permission_classes = [IsAuthenticatedOrReadOnly]  # Authenticated users can update; others can only read
 
     def perform_update(self, serializer):
         # Additional validation logic before saving
