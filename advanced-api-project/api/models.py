@@ -17,7 +17,7 @@ class Author(models.Model):
 # - author: A foreign key to the Author model, representing the relationship that a book is written by one author.
 class Book(models.Model):
     title = models.CharField(max_length=100)
-    publication_year = models.IntegerField(max_length=4)
+    publication_year = models.IntegerField()
     author = models.ForeignKey(
         Author, 
         on_delete=models.CASCADE, # Deletes books when the associated author is deleted.
