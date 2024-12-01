@@ -3,8 +3,9 @@ from rest_framework.exceptions import ValidationError
 from api.models import Book
 from api.serializers import BookSerializer
 from datetime import datetime
-from rest_framework.filters import SearchFilter
-from django_filters.rest_framework import DjangoFilterBackend
+from django_filters import rest_framework
+from rest_framework import filters
+# from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated, AllowAny
 from django_filters import rest_framework
 
@@ -18,13 +19,13 @@ class BookListView(generics.ListAPIView):
     """
     queryset = Book.objects.all()
     serializer_class = BookSerializer
-    # filter_backends = [SearchFilter]
+    filter_backends = [filters.SearchFilter]
     permission_classes = [AllowAny]  # Publicly accessible
-    filter_backends = [DjangoFilterBackend, SearchFilter]  # Add SearchFilter
+    # filter_backends = [DjangoFilterBackend, SearchFilter]  # Add SearchFilter
     filterset_fields = ['title', 'author', 'publication_year']
     search_fields = ['title', 'author__name']  # Enable search by title or author name
     ordering_fields = ['title', 'publication_year']  # Allow ordering by these fields
-    ordering = ['title']  # Default ordering
+    ordering = [filters.OrderingFilter]  # Default ordering
 
 
 
