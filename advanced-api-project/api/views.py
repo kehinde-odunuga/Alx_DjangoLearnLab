@@ -3,9 +3,7 @@ from rest_framework.exceptions import ValidationError
 from api.models import Book
 from api.serializers import BookSerializer
 from datetime import datetime
-from django_filters import rest_framework
 from rest_framework import filters
-# from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated, AllowAny
 from django_filters import rest_framework
 
