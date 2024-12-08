@@ -17,3 +17,20 @@
 ### Navigation
 - Home: `/`
 - Create Post: `/post/new/`
+
+
+## Comment System
+
+### Features
+- Add comments to blog posts.
+- Edit or delete comments (only by the author).
+- Display all comments under their respective posts.
+
+### Permissions
+- Only authenticated users can add, edit, or delete comments.
+- All users can view comments.
+
+### Usage
+- Add a comment: `/post/<post_id>/comments/new/`
+- Edit a comment: `/comments/<comment_id>/edit/`
+- Delete a comment: `/comments/<comment_id>/delete/`
