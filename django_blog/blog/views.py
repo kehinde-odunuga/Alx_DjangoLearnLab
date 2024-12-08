@@ -7,6 +7,7 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from blog.models import Post, Comment
 from django.contrib.auth.views import LoginView
+from django.views.generic.edit import CreateView
 
 
 def home(request):
@@ -105,6 +106,24 @@ def add_comment(request, post_id):
     else:
         form = CommentForm()
     return render(request, 'blog/comment_form.html', {'form': form, 'post': post})
+
+
+class CommentCreateView(LoginRequiredMixin, CreateView):
+    model = Comment
+    form_class = CommentForm
+    template_name = 'blog/comment_form.html'  # Create this template
+
+    def form_valid(self, form):
+        # Attach the current post and user to the comment
+        post = get_object_or_404(Post, id=self.kwargs['post_id'])
+        form.instance.post = post
+        form.instance.author = self.request.user
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        # Redirect back to the post's detail page
+        return self.object.post.get_absolute_url()
+
 
 class CommentUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Comment
