@@ -5,6 +5,7 @@
 <p>Are you sure you want to delete "{{ post.title }}"?</p>
 <form method="post">
     {% csrf_token %}
-    <button type="submit">Delete</button>
+    <button type="submit" class="btn btn-danger">Confirm Delete</button>
 </form>
+<a href="{{ post.get_absolute_url }}" class="btn btn-secondary">Cancel</a>
 {% endblock %}

@@ -2,8 +2,10 @@
 
 {% block content %}
 <h1>{{ post.title }}</h1>
-<p>{{ post.content }}</p>
 <p>By {{ post.author }} on {{ post.created_at }}</p>
-<a href="{% url 'blog:post-update' post.pk %}">Edit</a>
-<a href="{% url 'blog:post-delete' post.pk %}">Delete</a>
+<p>{{ post.content }}</p>
+{% if request.user == post.author %}
+    <a href="{% url 'blog:post-update' post.pk %}" class="btn btn-warning">Edit</a>
+    <a href="{% url 'blog:post-delete' post.pk %}" class="btn btn-danger">Delete</a>
+{% endif %}
 {% endblock %}
