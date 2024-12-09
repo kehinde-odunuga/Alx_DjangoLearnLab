@@ -9,6 +9,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from blog.models import Post, Comment
 from django.contrib.auth.views import LoginView
 from django.views.generic.edit import CreateView
+from taggit.models import Tag
 
 
 def home(request):
@@ -166,6 +167,23 @@ class PostsByTagView(ListView):
     model = Post
     template_name = 'blog/posts_by_tag.html'
     context_object_name = 'posts'
+    paginate_by = 5
 
     def get_queryset(self):
-        return Post.objects.filter(tags__name=self.kwargs['tag_name'])
+        tag_slug = self.kwargs.get('tag_slug')
+        self.tag = None
+        if tag_slug:
+            try:
+                self.tag = Tag.objects.get(slug=tag_slug)
+            except Tag.DoesNotExist:
+                self.tag = None
+
+        if self.tag:
+            return Post.objects.filter(tags__in=[self.tag])
+        else:
+            return Post.objects.none()  # Return an empty queryset if tag is invalid
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['tag'] = self.tag  # Pass the current tag to the context
+        return context
