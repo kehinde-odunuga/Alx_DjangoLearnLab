@@ -163,7 +163,7 @@ def search(request):
     return render(request, 'blog/search_results.html', {'query': query, 'posts': posts})
 
 
-class PostsByTagView(ListView):
+class PostByTagListView(ListView):
     model = Post
     template_name = 'blog/posts_by_tag.html'
     context_object_name = 'posts'
