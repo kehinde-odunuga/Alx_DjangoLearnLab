@@ -2,6 +2,7 @@ from django import forms
 from blog.models import Post, Comment
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+from taggit.forms import TagWidget
 
 
 class CustomUserCreationForm(UserCreationForm):
@@ -19,6 +20,7 @@ class PostForm(forms.ModelForm):
         widgets = {
             'title': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Post Title'}),
             'content': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Write your content here...'}),
+            'tags': TagWidget(attrs={'class': 'form-control', 'placeholder': 'Add tags, separated by commas'}),
         }
 
 
