@@ -34,3 +34,14 @@
 - Add a comment: `/post/<post_id>/comments/new/`
 - Edit a comment: `/comments/<comment_id>/edit/`
 - Delete a comment: `/comments/<comment_id>/delete/`
+
+### Tag Functionality
+
+# User Instructions:
+- Add a section in your project README explaining:
+How to add tags while creating or editing a post.
+How to use the search bar to find posts.
+How to click tags to filter posts.
+Code Comments:
+
+Add comments to your code explaining key functionalities.

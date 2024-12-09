@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
+from django.db.models import Q
 from blog.forms import CustomUserCreationForm, CommentForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserChangeForm
@@ -28,13 +29,14 @@ def register(request):
 
 
 class CustomLoginView(LoginView):
+    template_name = 'blog/login.html'
     def get_success_url(self):
-        return self.get_redirect_url() or redirect('posts')  # Use your desired view
+        return self.get_redirect_url() or 'posts.html'  # Use your desired view
 
 
 @login_required
 def profile(request):
-    return render(request, 'profile.html')
+    return render(request, 'blog/profile.html')
 
 @login_required
 def edit_profile(request):
@@ -151,3 +153,19 @@ class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
     def get_success_url(self):
         return self.object.post.get_absolute_url()
+
+def search(request):
+    query = request.GET.get('q', '')
+    posts = Post.objects.filter(
+        Q(title__icontains=query) | Q(content__icontains=query) | Q(tags__name__icontains=query)
+    ).distinct()
+    return render(request, 'blog/search_results.html', {'query': query, 'posts': posts})
+
+
+class PostsByTagView(ListView):
+    model = Post
+    template_name = 'blog/posts_by_tag.html'
+    context_object_name = 'posts'
+
+    def get_queryset(self):
+        return Post.objects.filter(tags__name=self.kwargs['tag_name'])
