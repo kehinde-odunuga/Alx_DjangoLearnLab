@@ -1,10 +1,13 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status, generics
+from rest_framework import status, generics, permissions
 from rest_framework.authtoken.models import Token
-from accounts.serializers import UserRegistrationSerializer
 from accounts.models import CustomUser
 from rest_framework.permissions import IsAuthenticated
+from django.contrib.auth import authenticate
+from rest_framework.authentication import TokenAuthentication
+from accounts.serializers import FollowSerializer, UserProfileSerializer, UserRegistrationSerializer, UserLoginSerializer
+
 
 class UserRegistrationView(APIView):
     def post(self, request):
@@ -15,8 +18,6 @@ class UserRegistrationView(APIView):
             return Response({"message": "User registered successfully.", "token": token.key}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-from django.contrib.auth import authenticate
-from .serializers import UserLoginSerializer
 
 class UserLoginView(APIView):
     def post(self, request):
@@ -31,10 +32,6 @@ class UserLoginView(APIView):
             return Response({"error": "Invalid credentials."}, status=status.HTTP_401_UNAUTHORIZED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.authentication import TokenAuthentication
-from .serializers import UserProfileSerializer
 
 class UserProfileView(APIView):
     authentication_classes = [TokenAuthentication]
@@ -51,7 +48,6 @@ class UserProfileView(APIView):
             return Response({"message": "Profile updated successfully.", "data": serializer.data}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-from accounts.serializers import FollowSerializer
 
 class FollowUserView(generics.GenericAPIView):
     permission_classes = [IsAuthenticated]
@@ -68,7 +64,7 @@ class FollowUserView(generics.GenericAPIView):
             return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
 class UnfollowUserView(generics.GenericAPIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
     serializer_class = FollowSerializer
 
     def post(self, request, user_id):
