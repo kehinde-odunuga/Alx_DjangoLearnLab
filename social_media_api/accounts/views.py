@@ -1,6 +1,6 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import status, generics
 from rest_framework.authtoken.models import Token
 from accounts.serializers import UserRegistrationSerializer
 from accounts.models import CustomUser
@@ -51,9 +51,11 @@ class UserProfileView(APIView):
             return Response({"message": "Profile updated successfully.", "data": serializer.data}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+from accounts.serializers import FollowSerializer
 
-class FollowUserView(APIView):
+class FollowUserView(generics.GenericAPIView):
     permission_classes = [IsAuthenticated]
+    serializer_class = FollowSerializer
 
     def post(self, request, user_id):
         try:
@@ -65,8 +67,9 @@ class FollowUserView(APIView):
         except CustomUser.DoesNotExist:
             return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
-class UnfollowUserView(APIView):
+class UnfollowUserView(generics.GenericAPIView):
     permission_classes = [IsAuthenticated]
+    serializer_class = FollowSerializer
 
     def post(self, request, user_id):
         try:
