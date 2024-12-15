@@ -143,3 +143,12 @@ python manage.py migrate
 ### Search and Filter Examples
 - Search Posts: `GET /posts/?search=keyword`
 - Order Posts: `GET /posts/?ordering=-created_at`
+
+### Follow Management
+- **Follow a User**: `POST /api/accounts/follow/<user_id>/`
+- **Unfollow a User**: `POST /api/accounts/unfollow/<user_id>/`
+
+### Feed
+- **User Feed**: `GET /api/posts/feed/`
+  - Requires authentication.
+  - Displays posts from users the authenticated user follows.
