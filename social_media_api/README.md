@@ -2,8 +2,8 @@
 
 ### **Django Project Structure**
 ```
-advanced_api_project/
-|-- advanced_api_project/
+social_media_api/
+|-- social_media_api/
 |   |-- __init__.py
 |   |-- settings.py
 |   |-- urls.py
@@ -11,6 +11,17 @@ advanced_api_project/
 |   |-- asgi.py
 |
 |-- accounts/
+|   |-- migrations/
+|   |-- __init__.py
+|   |-- admin.py
+|   |-- apps.py
+|   |-- models.py
+|   |-- serializers.py
+|   |-- views.py
+|   |-- urls.py
+|   |-- tests.py
+|
+|-- posts/
 |   |-- migrations/
 |   |-- __init__.py
 |   |-- admin.py
@@ -31,11 +42,9 @@ advanced_api_project/
 ### **Initial Migrations**
 Run these commands to create initial migrations:
 ```bash
-python manage.py makemigrations accounts
+python manage.py makemigrations
 python manage.py migrate
 ```
-
----
 
 
 ```markdown
@@ -116,3 +125,21 @@ python manage.py migrate
       "followers": []
   }
   ```
+
+#### 4. Posts
+- **List Posts**: `GET /posts/`
+- **Create Post**: `POST /posts/`
+- **Retrieve Post**: `GET /posts/<id>/`
+- **Update Post**: `PUT /posts/<id>/`
+- **Delete Post**: `DELETE /posts/<id>/`
+
+#### 5. Comments
+- **List Comments**: `GET /comments/`
+- **Create Comment**: `POST /comments/`
+- **Retrieve Comment**: `GET /comments/<id>/`
+- **Update Comment**: `PUT /comments/<id>/`
+- **Delete Comment**: `DELETE /comments/<id>/`
+
+### Search and Filter Examples
+- Search Posts: `GET /posts/?search=keyword`
+- Order Posts: `GET /posts/?ordering=-created_at`
