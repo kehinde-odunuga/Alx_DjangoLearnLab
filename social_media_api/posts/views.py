@@ -68,7 +68,7 @@ class LikePostView(APIView):
 
     def post(self, request, pk):
 
-        post = get_object_or_404(Post, pk=pk)
+        post = generics.get_object_or_404(Post, pk=pk)
 
         user = request.user
         try:
