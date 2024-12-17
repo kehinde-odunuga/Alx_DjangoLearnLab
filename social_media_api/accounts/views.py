@@ -2,6 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, generics, permissions
 from rest_framework.authtoken.models import Token
+from rest_framework.authtoken.views import ObtainAuthToken
 from accounts.models import CustomUser
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import authenticate
@@ -9,8 +10,13 @@ from rest_framework.authentication import TokenAuthentication
 from accounts.serializers import FollowSerializer, UserProfileSerializer, UserRegistrationSerializer, UserLoginSerializer
 
 
-class UserRegistrationView(APIView):
+class UserRegistrationView(generics.CreateAPIView):
+    queryset = CustomUser.objects.all()
+    serializer_class = UserRegistrationSerializer
+    permission_classes = [permissions.AllowAny]
+
     def post(self, request):
+        
         serializer = UserRegistrationSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
@@ -19,7 +25,7 @@ class UserRegistrationView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class UserLoginView(APIView):
+class UserLoginView(ObtainAuthToken):
     def post(self, request):
         serializer = UserLoginSerializer(data=request.data)
         if serializer.is_valid():
