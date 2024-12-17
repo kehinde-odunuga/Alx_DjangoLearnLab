@@ -77,7 +77,7 @@ class LikePostView(APIView):
             return Response({"detail": "Post not found"}, status=status.HTTP_404_NOT_FOUND)
 
         # Check if user already liked the post
-        like, created = Like.objects.get_or_create(user=user, post=post)
+        like, created = Like.objects.get_or_create(user=request.user, post=post)
         if not created:
             return Response({"detail": "You already liked this post"}, status=status.HTTP_400_BAD_REQUEST)
 
