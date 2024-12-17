@@ -6,6 +6,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from notifications.models import Notification
 from django.contrib.contenttypes.models import ContentType
+from django.shortcuts import get_object_or_404
 
 
 class PostViewSet(viewsets.ModelViewSet):
@@ -66,6 +67,9 @@ class LikePostView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, pk):
+
+        post = get_object_or_404(Post, pk=pk)
+
         user = request.user
         try:
             post = Post.objects.get(pk=pk)
@@ -86,17 +90,20 @@ class LikePostView(APIView):
             target_object_id=post.id
         )
 
-        return Response({"detail": "Post liked"}, status=status.HTTP_201_CREATED)
+        return Response({"detail": "Post liked successfully"}, status=status.HTTP_201_CREATED)
 
 class UnlikePostView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, pk):
+
+        post = get_object_or_404(Post, pk=pk)
+
         user = request.user
         try:
             post = Post.objects.get(pk=pk)
             like = Like.objects.get(user=user, post=post)
             like.delete()
-            return Response({"detail": "Post unliked"}, status=status.HTTP_200_OK)
+            return Response({"detail": "Post unliked successfully"}, status=status.HTTP_200_OK)
         except (Post.DoesNotExist, Like.DoesNotExist):
             return Response({"detail": "Like not found"}, status=status.HTTP_404_NOT_FOUND)
