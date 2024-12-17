@@ -1,9 +1,12 @@
-from rest_framework import viewsets, permissions, filters, generics
-from posts.models import Post, Comment
+from rest_framework import viewsets, permissions, filters, generics, status
+from posts.models import Post, Comment, Like
 from posts.serializers import PostSerializer, CommentSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from notifications.models import Notification
+from django.contrib.contenttypes.models import ContentType
+
 
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
@@ -57,3 +60,43 @@ class FeedView(generics.ListAPIView):
         queryset = self.get_queryset()
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
+
+
+class LikePostView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, pk):
+        user = request.user
+        try:
+            post = Post.objects.get(pk=pk)
+        except Post.DoesNotExist:
+            return Response({"detail": "Post not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        # Check if user already liked the post
+        like, created = Like.objects.get_or_create(user=user, post=post)
+        if not created:
+            return Response({"detail": "You already liked this post"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Create a notification for the post's author
+        Notification.objects.create(
+            recipient=post.author,
+            actor=user,
+            verb="liked",
+            target_content_type=ContentType.objects.get_for_model(post),
+            target_object_id=post.id
+        )
+
+        return Response({"detail": "Post liked"}, status=status.HTTP_201_CREATED)
+
+class UnlikePostView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, pk):
+        user = request.user
+        try:
+            post = Post.objects.get(pk=pk)
+            like = Like.objects.get(user=user, post=post)
+            like.delete()
+            return Response({"detail": "Post unliked"}, status=status.HTTP_200_OK)
+        except (Post.DoesNotExist, Like.DoesNotExist):
+            return Response({"detail": "Like not found"}, status=status.HTTP_404_NOT_FOUND)
